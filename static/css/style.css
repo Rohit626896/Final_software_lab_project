@@ -1,0 +1,256 @@
+
+/* 1. Global Styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8fafc;
+    color: #1e293b;
+    line-height: 1.6;
+}
+
+/*2. Navigation Bar*/
+
+nav {
+    background-color: #ffffff;
+    padding: 20px 8%;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2563eb;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #334155;
+    font-size: 16px;
+    font-weight: 500;
+
+    transition: color 0.3s ease;
+}
+
+nav a:hover {
+    color: #2563eb;
+}
+
+/* 3. Home Section */
+
+.hero {
+    text-align: center;
+    padding: 100px 20px 80px;
+}
+
+.hero h1 {
+    font-size: 42px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #0f172a;
+}
+
+.hero p {
+    font-size: 18px;
+    color: #64748b;
+    max-width: 750px;
+    margin: 0 auto 35px;
+}
+
+/* 4. Search Bar*/
+
+.search-box {
+    display: flex;
+    max-width: 650px;
+    margin: auto;
+
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.search-box:focus-within {
+    border-color: #2563eb;
+}
+
+.search-box input {
+    flex: 1;
+    min-width: 0;
+    padding: 18px 20px;
+
+    border: none;
+    outline: none;
+    font-size: 16px;
+}
+
+.search-box button {
+    padding: 15px 30px;
+
+    background-color: #2563eb;
+    color: white;
+
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+
+    transition: background-color 0.3s ease;
+}
+
+.search-box button:hover {
+    background-color: #1d4ed8;
+}
+
+/*5. Features Section  */
+
+.features {
+    padding: 60px 8%;
+    text-align: center;
+}
+
+.features h2 {
+    font-size: 30px;
+    margin-bottom: 40px;
+    color: #0f172a;
+}
+
+.feature-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.card {
+    background-color: white;
+    padding: 35px 25px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+
+    transition: transform 0.3s ease,
+                box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.10);
+}
+
+.card h3 {
+    font-size: 20px;
+    color: #2563eb;
+    margin-bottom: 15px;
+}
+
+.card p {
+    font-size: 15px;
+    color: #64748b;
+    line-height: 1.7;
+}
+
+/* 6. About Section  */
+
+.about {
+    text-align: center;
+    padding: 70px 15%;
+    background-color: #eef2ff;
+}
+
+.about h2 {
+    font-size: 30px;
+    color: #0f172a;
+    margin-bottom: 20px;
+}
+
+.about p {
+    font-size: 17px;
+    color: #475569;
+    line-height: 1.8;
+}
+
+/*  7. Footer */
+
+footer {
+    background-color: #0f172a;
+    color: white;
+
+    text-align: center;
+    padding: 25px;
+}
+
+footer p {
+    font-size: 14px;
+}
+
+/* 8. Responsive Design  */
+
+
+/*
+ I want to implement this tommoro.......
+@media (max-width: 768px) {
+
+    nav {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    nav ul {
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .hero {
+        padding: 70px 20px;
+    }
+
+    .hero h1 {
+        font-size: 30px;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    .search-box button {
+        padding: 15px;
+    }
+
+    .feature-container {
+        grid-template-columns: 1fr;
+    }
+
+    .features {
+        padding: 50px 20px;
+    }
+
+    .about {
+        padding: 50px 20px;
+    }
+}
+*/
