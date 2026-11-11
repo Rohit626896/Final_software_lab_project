@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description"
+              content="Discover papers, inspect linked research resources, and build evidence-based reproducibility-readiness reports.">
+        <title>
+            {% block title %}
+                Research Paper Reproducibility Explorer
+            {% endblock %}
+            · PaperLens
+        </title>
+        <link rel="stylesheet"
+              href="{{ url_for('static', filename='css/style.css') }}">
+        <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+        {% block head %}{% endblock %}
+    </head>
+    <body>
+        <a class="skip-link" href="#main">Skip to content</a>
+        <header class="site-header">
+            <nav class="nav-shell" aria-label="Main navigation">
+                <a class="brand"
+                   href="{{ url_for('main.home') }}"
+                   aria-label="PaperLens home">
+                    <span class="brand-icon" aria-hidden="true">
+                        P
+                        <span>·</span>
+                    </span>
+                    PaperLens
+                </a>
+                <div class="nav-links">
+                    <a href="{{ url_for('main.search') }}"
+                       {% if request.endpoint == 'main.search' %}aria-current="page"{% endif %}>
+                        Discover
+                    </a>
+                    <a href="{{ url_for('main.library') }}"
+                       {% if request.endpoint == 'main.library' %}aria-current="page"{% endif %}>
+                        Library
+                    </a>
+                    <a href="{{ url_for('main.analytics') }}"
+                       {% if request.endpoint == 'main.analytics' %}aria-current="page"{% endif %}>
+                        Analytics
+                    </a>
+                    <a href="{{ url_for('main.methodology') }}"
+                       {% if request.endpoint == 'main.methodology' %}aria-current="page"{% endif %}>
+                        Methodology
+                    </a>
+                </div>
+            </nav>
+        </header>
+        <main id="main">
+            <div class="container flash-stack" role="status">
+                {% for category, message in get_flashed_messages(with_categories=true) %}
+                    <div class="notice {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% block content %}{% endblock %}
+        </main>
+        <footer class="site-footer">
+            <div class="container footer-inner">
+                <a class="brand" href="{{ url_for('main.home') }}">PaperLens</a>
+                <p>
+                    Research Paper Reproducibility Explorer
+                    <br>
+                    <span>Evidence for your next experiment.</span>
+                </p>
+                <a href="{{ url_for('main.methodology') }}">Understand the score ↗</a>
+            </div>
+        </footer>
+    </body>
+</html>

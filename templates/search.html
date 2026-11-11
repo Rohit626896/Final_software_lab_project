@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% from "_cards.html" import paper_card, search_form %}
+{% block title %}
+    Discover papers
+{% endblock %}
+{% block content %}
+    <section class="container page-head">
+        <span class="eyebrow">DISCOVER</span>
+        <h1>Find your next paper</h1>
+        <p class="muted">
+            Search open-access research. Results are saved to your local library for analysis.
+        </p>
+        {{ search_form(query, source) }}
+    </section>
+    <section class="container section">
+        {% for error in errors %}
+            <div class="notice error" role="alert">{{ error }}</div>
+        {% endfor %}
+        {% if query %}
+            <div class="section-heading">
+                <h2>{{ papers|length }} result{{ '' if papers|length == 1 else 's' }} for “{{ query }}”</h2>
+                <span class="meta">Up to 10 results per source · cached for 10 minutes</span>
+            </div>
+            {% if papers %}
+                <div class="paper-grid">
+                    {% for paper in papers %}
+                        {{ paper_card(paper) }}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <h3>
+                        {% if errors %}
+                            Search couldn’t finish
+                        {% else %}
+                            No matching open-access papers
+                        {% endif %}
+                    </h3>
+                    <p>Try fewer keywords, switch sources, or upload a PDF.</p>
+                    <a class="button secondary"
+                       href="{{ url_for('main.home', _anchor='upload') }}">Upload a paper</a>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <span class="empty-icon" aria-hidden="true">⌕</span>
+                <h2>A good question is a great starting point</h2>
+                <p>Enter a research topic or paper title above to explore the literature.</p>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

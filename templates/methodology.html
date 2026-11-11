@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}
+    Scoring methodology
+{% endblock %}
+{% block content %}
+    <section class="container page-head narrow">
+        <span class="eyebrow">TRANSPARENT BY DESIGN</span>
+        <h1>Evidence behind every point.</h1>
+        <p class="muted">
+            PaperLens measures the availability of linked research resources. It does not run experiments or certify reproducibility.
+        </p>
+    </section>
+    <section class="container section narrow prose">
+        <article class="panel">
+            <h2>The readiness rubric · v1.0</h2>
+            <p>
+                Select the resource categories applicable to a paper before analysis. All four are selected by default; this is a starting assumption for you to review.
+            </p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Default weight</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category, weight in weights.items() %}
+                            <tr>
+                                <td>{{ category|capitalize }}</td>
+                                <td>{{ weight }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <p class="formula">
+                Score = 100 × weights of applicable categories with an accessible link ÷ weights of all applicable categories.
+            </p>
+            <p>
+                A category receives its full weight when at least one detected link returns a successful HTTP status. Other links receive no points. Excluded categories contribute to neither numerator nor denominator.
+            </p>
+            <p>
+                <strong>Example:</strong>
+                code and dataset links are accessible, while documentation and supplementary material are not detected. With all categories applicable, the score is 70/100. If only code and datasets are applicable, the score is 100/100. Always compare category selections alongside scores.
+            </p>
+        </article>
+        <article class="panel">
+            <h2>How resources are found</h2>
+            <p>
+                We read embedded PDF hyperlinks and HTTP/HTTPS URLs in PDF text and abstracts. Domain names, URL paths, and nearby text suggest a category. The report preserves page numbers and text evidence so you can check the classification.
+            </p>
+            <p>
+                These heuristics can include references to other papers or misclassify a general repository. You can correct categories, including marking unrelated links as “Other,” which contributes no points. Image-only PDFs need OCR and may have incomplete coverage.
+            </p>
+        </article>
+        <article class="panel">
+            <h2>What accessibility means</h2>
+            <ul>
+                <li>
+                    <strong>Accessible:</strong>
+                    HTTP 2xx. The URL responds publicly; content completeness is unknown.
+                </li>
+                <li>
+                    <strong>Missing:</strong>
+                    HTTP 404 or 410 at the time of checking.
+                </li>
+                <li>
+                    <strong>Restricted:</strong>
+                    HTTP 401, 403, or 429. Login, bot protection, or rate limits may apply.
+                </li>
+                <li>
+                    <strong>Unresolved:</strong>
+                    network/TLS errors, timeouts, unexpected responses, or unsuccessful checks.
+                </li>
+                <li>
+                    <strong>Blocked:</strong>
+                    a local, private, reserved, or otherwise disallowed destination.
+                </li>
+            </ul>
+            <p>
+                Restricted and unresolved results mean uncertainty, not confirmed absence. Each report records a UTC timestamp and can be refreshed.
+            </p>
+        </article>
+        <article class="panel">
+            <h2>Coverage and limits</h2>
+            <p>
+                Uploads and PDF downloads are limited to 20 MB and 300 pages. At most 60 links are checked per report, prioritizing recognized resource categories. Redirects are bounded and each destination is checked against public-network rules. Checks use HEAD with a small GET fallback when HEAD is unsupported.
+            </p>
+            <p>
+                When a remote PDF cannot be retrieved, analysis falls back to links in the abstract and clearly labels the report as partial. No code, full datasets, supplementary contents, or external web pages are executed or deeply inspected.
+            </p>
+        </article>
+        <article class="panel">
+            <h2>Your local research workspace</h2>
+            <p>
+                Papers, reports, and uploaded PDFs are saved in the local data directory. Discovery contacts arXiv or Semantic Scholar; availability checks contact linked public hosts. This application is designed as a personal, single-process tool without user accounts.
+            </p>
+            <p>
+                Search uses the
+                <a href="https://info.arxiv.org/help/api/user-manual.html"
+                   rel="noopener noreferrer">arXiv API</a>
+                and
+                <a href="https://api.semanticscholar.org/api-docs/graph"
+                   rel="noopener noreferrer">Semantic Scholar Academic Graph API</a>
+                . Provider limits and outages may affect results. The library and existing reports remain available offline.
+            </p>
+        </article>
+    </section>
+{% endblock %}

@@ -1,0 +1,6 @@
+-r requirements.txt
+playwright>=1.50,<2
+black>=24,<27
+djlint>=1.36,<2
+jsbeautifier>=2,<3
+cssbeautifier>=2,<3

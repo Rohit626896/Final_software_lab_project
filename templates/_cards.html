@@ -1,0 +1,84 @@
+{% macro paper_card(paper) %}
+    <article class="paper-card">
+        <div class="card-top">
+            <div class="tag-row">
+                <span class="tag">{{ paper.source }}</span>
+                {% if paper.analysis_status == "partial" %}
+                    <span class="status unresolved">Abstract only</span>
+                {% elif paper.analysis_status == "failed" %}
+                    <span class="status missing">Analysis failed</span>
+                {% endif %}
+                <span class="meta">{{ paper.year or 'Year unknown' }}</span>
+            </div>
+            {% if paper.report %}
+                <span class="score-pill">{{ paper.score }}/100</span>
+            {% else %}
+                <span class="status unchecked">Not analyzed</span>
+            {% endif %}
+        </div>
+        <h3>
+            <a href="{{ url_for('main.detail', paper_id=paper.id) }}">{{ paper.title }}</a>
+        </h3>
+        <p class="authors">
+            {{ paper.authors[:3] | join(", ") }}
+            {% if paper.authors|length > 3 %}
+                and {{ paper.authors|length - 3 }} more
+            {% endif %}
+            {% if not paper.authors %}
+                Author information not provided
+            {% endif %}
+        </p>
+        <p class="abstract-preview">
+            {{ paper.abstract[:260] }}
+            {% if paper.abstract|length > 260 %}
+                …
+            {% endif %}
+            {% if not paper.abstract %}
+                Open the paper to inspect its resource availability.
+            {% endif %}
+        </p>
+        <div class="card-bottom">
+            <span class="meta">{{ paper.area }}</span>
+            <a class="text-link"
+               href="{{ url_for('main.detail', paper_id=paper.id) }}">
+                {% if paper.report %}
+                    View report
+                {% else %}
+                    Explore paper
+                {% endif %}
+                <span aria-hidden="true">→</span>
+            </a>
+        </div>
+    </article>
+{% endmacro %}
+{% macro search_form(query='', source='arXiv') %}
+    <form class="search-form"
+          action="{{ url_for('main.search') }}"
+          method="get"
+          data-search>
+        <div class="search-input">
+            <span aria-hidden="true">⌕</span>
+            <label class="sr-only" for="search-query">Research topic or paper title</label>
+            <input id="search-query"
+                   type="search"
+                   name="q"
+                   value="{{ query }}"
+                   placeholder="Search a topic, title, or research question…"
+                   maxlength="200"
+                   required>
+        </div>
+        <label class="sr-only" for="search-source">Paper source</label>
+        <select id="search-source" name="source">
+            <option value="arXiv" {% if source == 'arXiv' %}selected{% endif %}>arXiv</option>
+            <option value="Semantic Scholar"
+                    {% if source == 'Semantic Scholar' %}selected{% endif %}>
+                Semantic Scholar
+            </option>
+            <option value="both" {% if source == 'both' %}selected{% endif %}>Both sources</option>
+        </select>
+        <button class="button primary" type="submit">
+            Search papers
+            <span aria-hidden="true">→</span>
+        </button>
+    </form>
+{% endmacro %}

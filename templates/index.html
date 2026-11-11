@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% from "_cards.html" import paper_card, search_form %}
+{% block content %}
+    <section class="hero">
+        <div class="container">
+            <div class="eyebrow">
+                <span class="live-dot"></span>
+                OPEN RESEARCH. CLEARER EVIDENCE.
+            </div>
+            <h1>
+                Great research deserves
+                <br>
+                <span>a reproducible start.</span>
+            </h1>
+            <p class="hero-copy">
+                Find the paper. Follow the resources. Understand what’s available before you start reproducing the work.
+            </p>
+            {{ search_form() }}
+            <div class="search-suggestions">
+                <span>Try a topic</span>
+                <a href="{{ url_for('main.search', q='computer vision') }}">Computer vision ↗</a>
+                <a href="{{ url_for('main.search', q='climate modeling') }}">Climate modeling ↗</a>
+                <a href="{{ url_for('main.search', q='large language models') }}">Language models ↗</a>
+            </div>
+            <div class="history-container" id="recent-searches" hidden>
+                <span class="meta">Recent searches</span>
+                <div id="searchHistory" class="tag-row"></div>
+            </div>
+            <div class="hero-footnote">
+                Search arXiv & Semantic Scholar
+                <span>·</span>
+                Bring your own PDF
+                <span>·</span>
+                Keep an evidence trail
+            </div>
+        </div>
+    </section>
+    <section class="container section">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">FROM PAPER TO PERSPECTIVE</span>
+                <h2>A clearer path to reproduction</h2>
+            </div>
+            <a class="text-link" href="{{ url_for('main.methodology') }}">How scoring works →</a>
+        </div>
+        <div class="feature-grid">
+            <article class="feature-card">
+                <span class="step-number">01 / DISCOVER</span>
+                <h3>Start with the research</h3>
+                <p>
+                    Find open-access papers or upload a PDF from your own reading list. Save everything in one searchable library.
+                </p>
+            </article>
+            <article class="feature-card">
+                <span class="step-number">02 / INSPECT</span>
+                <h3>Follow the evidence</h3>
+                <p>
+                    Extract code, dataset, documentation, and supplementary links. See their source page and current accessibility.
+                </p>
+            </article>
+            <article class="feature-card">
+                <span class="step-number">03 / UNDERSTAND</span>
+                <h3>Know your starting point</h3>
+                <p>
+                    Get a transparent readiness score, review the evidence, and export a report for your research notes.
+                </p>
+            </article>
+        </div>
+    </section>
+    <section class="container section upload-section" id="upload">
+        <div>
+            <span class="eyebrow">YOUR READING LIST, CONNECTED</span>
+            <h2>Already have a paper?</h2>
+            <p class="muted">
+                Upload a PDF to inspect its linked resources. Files stay in this local installation.
+            </p>
+            <div class="inline-stats" data-library-stats="{{ url_for('main.library_statistics') }}">
+                <span>
+                    <strong data-stat="total">{{ total }}</strong>
+                    saved papers
+                </span>
+                <span>
+                    <strong data-stat="analyzed">{{ analyzed }}</strong>
+                    reports created
+                </span>
+            </div>
+        </div>
+        <form class="panel upload-form"
+              action="{{ url_for('main.upload') }}"
+              method="post"
+              enctype="multipart/form-data"
+              data-busy>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label for="pdf">Choose a research paper</label>
+            <input id="pdf"
+                   name="pdf"
+                   type="file"
+                   accept=".pdf,application/pdf"
+                   required
+                   aria-describedby="upload-help">
+            <span id="upload-help" class="meta">PDF only · up to 20 MB · up to 300 pages</span>
+            <div class="form-columns">
+                <div>
+                    <label for="upload-title">
+                        Title
+                        <span class="optional">(optional)</span>
+                    </label>
+                    <input id="upload-title"
+                           name="title"
+                           maxlength="300"
+                           placeholder="Use the PDF title">
+                </div>
+                <div>
+                    <label for="upload-area">
+                        Research area
+                        <span class="optional">(optional)</span>
+                    </label>
+                    <input id="upload-area"
+                           name="area"
+                           maxlength="80"
+                           placeholder="e.g. Computer science">
+                </div>
+            </div>
+            <label for="upload-year">
+                Publication year
+                <span class="optional">(optional)</span>
+            </label>
+            <input id="upload-year"
+                   name="year"
+                   type="number"
+                   min="1000"
+                   max="9999"
+                   placeholder="e.g. 2024">
+            <button class="button primary" type="submit">Add PDF to library →</button>
+        </form>
+    </section>
+    {% if recent %}
+        <section class="container section">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">PICK UP WHERE YOU LEFT OFF</span>
+                    <h2>Recently saved</h2>
+                </div>
+                <a class="text-link" href="{{ url_for('main.library') }}">Open library →</a>
+            </div>
+            <div class="paper-grid">
+                {% for paper in recent %}
+                    {{ paper_card(paper) }}
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}
+    Research analytics
+{% endblock %}
+{% block head %}
+    {% if analyzed %}
+        <script src="{{ url_for('main.plotly_asset') }}" defer></script>
+    {% endif %}
+{% endblock %}
+{% block content %}
+    <section class="container page-head">
+        <span class="eyebrow">THE BIGGER PICTURE</span>
+        <h1>Research analytics</h1>
+        <p class="muted">
+            Compare the papers in your library. Charts use each paper’s latest saved report.
+        </p>
+    </section>
+    <section class="container section">
+        <div class="stat-grid">
+            <article class="panel stat">
+                <span>Saved papers</span>
+                <strong>{{ total }}</strong>
+            </article>
+            <article class="panel stat">
+                <span>Analyzed papers</span>
+                <strong>{{ analyzed }}</strong>
+            </article>
+            <article class="panel stat">
+                <span>Mean readiness</span>
+                <strong>
+                    {{ average if average is not none else '—' }}
+                    <small>
+                        {% if average is not none %}
+                            /100
+                        {% endif %}
+                    </small>
+                </strong>
+            </article>
+        </div>
+        {% if analyzed %}
+            <div class="notice warning">
+                These are descriptive statistics for your saved sample, including partial reports. Reviewer-selected categories and provider-specific area labels may differ between papers. Scores do not establish reproducibility or support population-level conclusions.
+            </div>
+            <div class="chart-grid">
+                {% for chart in charts %}
+                    <div class="panel chart-panel">
+                        <div id="chart-{{ loop.index }}"
+                             class="chart"
+                             aria-label="{{ 'Mean readiness by area' if loop.index == 1 else 'Mean readiness by year' }}">
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <script id="chart-data" type="application/json">{{ charts|tojson }}</script>
+            <div class="chart-grid">
+                {% for field, title in [('area','By research area'),('year','By publication year')] %}
+                    <section class="panel">
+                        <h2>{{ title }}</h2>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>{{ 'Area' if field == 'area' else 'Year' }}</th>
+                                        <th>Reports</th>
+                                        <th>Mean score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for key, row in groups[field].items() %}
+                                        <tr>
+                                            <td>{{ key }}</td>
+                                            <td>{{ row.count }}</td>
+                                            <td>{{ row.mean }}</td>
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="3">No publication-year metadata is available.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                {% endfor %}
+            </div>
+            <section class="panel">
+                <h2>Resource availability</h2>
+                <div class="availability-grid">
+                    {% for status, count in statuses.items() %}
+                        <div>
+                            <span class="status {{ status }}">{{ status|capitalize }}</span>
+                            <strong>{{ count }}</strong>
+                        </div>
+                    {% else %}
+                        <p>No linked resources were detected in the analyzed papers.</p>
+                    {% endfor %}
+                </div>
+            </section>
+        {% else %}
+            <div class="empty-state">
+                <h2>Your research story starts with one report</h2>
+                <p>Analyze a saved paper to see area comparisons, year trends, and resource accessibility.</p>
+                <a class="button primary" href="{{ url_for('main.library') }}">Open library →</a>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% from "_cards.html" import paper_card %}
+{% block title %}
+    Saved library
+{% endblock %}
+{% block content %}
+    <section class="container page-head">
+        <span class="eyebrow">YOUR RESEARCH WORKSPACE</span>
+        <div class="section-heading">
+            <div>
+                <h1>Paper library</h1>
+                <p class="muted">Saved discoveries, uploaded papers, and resource-readiness reports.</p>
+            </div>
+            <a class="button secondary"
+               href="{{ url_for('main.library_csv', **request.args.to_dict()) }}">
+                Export filtered CSV ↓
+            </a>
+        </div>
+    </section>
+    <section class="container section library-layout">
+        <form class="panel filter-panel" method="get">
+            <div class="section-heading">
+                <h2>Filters</h2>
+                <a href="{{ url_for('main.library') }}">Reset</a>
+            </div>
+            <label for="filter-q">Title, author, or abstract</label>
+            <input id="filter-q"
+                   name="q"
+                   value="{{ filters.q }}"
+                   maxlength="200"
+                   placeholder="Search your library">
+            {% for field, label in [('source', 'Source'), ('area', 'Research area'), ('year', 'Publication year')] %}
+                <label for="filter-{{ field }}">{{ label }}</label>
+                <select id="filter-{{ field }}" name="{{ field }}">
+                    <option value="">All</option>
+                    {% for value in facets[field] %}
+                        <option value="{{ value }}"
+                                {% if filters[field]|string == value|string %}selected{% endif %}>
+                            {{ value }}
+                        </option>
+                    {% endfor %}
+                </select>
+            {% endfor %}
+            <label for="filter-score">Minimum readiness score</label>
+            <input id="filter-score"
+                   type="number"
+                   min="0"
+                   max="100"
+                   name="min_score"
+                   value="{{ filters.min_score }}"
+                   placeholder="0–100">
+            <label for="filter-status">Analysis status</label>
+            <select id="filter-status" name="analysis_status">
+                <option value="">All statuses</option>
+                {% for value, label in [('not_analyzed','Not analyzed'),('analyzing','Analyzing'),('complete','PDF analyzed'),('partial','Abstract only'),('failed','Failed / interrupted')] %}
+                    <option value="{{ value }}"
+                            {% if filters.analysis_status == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+            <label for="filter-sort">Sort by</label>
+            <select id="filter-sort" name="sort">
+                {% for value, label in [('newest','Recently saved'),('score','Highest readiness'),('year','Publication year')] %}
+                    <option value="{{ value }}"
+                            {% if filters.sort == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <button class="button primary" type="submit">Apply filters</button>
+        </form>
+        <div>
+            <p class="result-count">{{ papers|length }} paper{{ '' if papers|length == 1 else 's' }}</p>
+            {% if papers %}
+                <div class="paper-grid library-grid">
+                    {% for paper in papers %}
+                        {{ paper_card(paper) }}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <h2>No papers here yet</h2>
+                    <p>Adjust your filters or discover a paper to begin your library.</p>
+                    <a class="button primary"
+                       href="{{ url_for('main.search') }}">Discover papers →</a>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}

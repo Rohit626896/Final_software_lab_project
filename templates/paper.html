@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+{% block title %}
+    {{ paper.title }}
+{% endblock %}
+{% block content %}
+    <section class="container page-head paper-head">
+        <a class="back-link" href="{{ url_for('main.library') }}">← Back to library</a>
+        <div class="tag-row">
+            <span class="tag">{{ paper.source }}</span>
+            <span class="tag">{{ paper.area }}</span>
+            <span class="meta">{{ paper.year or 'Year unknown' }}</span>
+        </div>
+        <h1>{{ paper.title }}</h1>
+        <p class="authors">
+            {{ paper.authors | join(", ") if paper.authors else 'Author information not provided' }}
+        </p>
+        <div class="actions">
+            {% if paper.paper_url %}
+                <a class="button secondary"
+                   href="{{ paper.paper_url }}"
+                   target="_blank"
+                   rel="noopener noreferrer">Original paper ↗</a>
+            {% endif %}
+            {% if paper.pdf_url %}
+                <a class="button secondary"
+                   href="{{ paper.pdf_url }}"
+                   target="_blank"
+                   rel="noopener noreferrer">Open PDF ↗</a>
+            {% endif %}
+            {% if paper.report %}
+                <a class="button secondary"
+                   href="{{ url_for('main.report_json', paper_id=paper.id) }}">
+                    Download report ↓
+                </a>
+                <button class="button secondary" type="button" data-print>Print / save PDF</button>
+            {% endif %}
+        </div>
+        {% if paper.abstract %}
+            <details class="abstract-block">
+                <summary>Read abstract</summary>
+                <p>{{ paper.abstract }}</p>
+            </details>
+        {% endif %}
+    </section>
+    <section class="container section report-layout{% if paper.report %} report-ready{% endif %}">
+        <div>
+            {% if job and job.status in ["queued","running"] %}
+                <div class="notice progress-notice"
+                     id="analysis-progress"
+                     data-status-url="{{ url_for('main.analysis_status', paper_id=paper.id) }}"
+                     role="status"
+                     aria-live="polite">
+                    <span class="spinner" aria-hidden="true"></span>
+                    <div>
+                        <strong>Analysis in progress</strong>
+                        <p id="job-stage">{{ job.stage }}</p>
+                        <span class="meta">You can leave this page and return. Larger papers may take a few minutes.</span>
+                    </div>
+                </div>
+                <noscript>
+                    <p>Refresh this page to see the completed report.</p>
+                </noscript>
+            {% elif job and job.status == "failed" %}
+                <div class="notice error" role="alert">
+                    {{ job.error }}
+                    {% if paper.report %}
+                        Showing the previous report below.
+                    {% endif %}
+                </div>
+            {% endif %}
+            {% if paper.report %}
+                <article class="panel score-panel">
+                    <div class="score-ring" style="--score: {{ paper.score }}">
+                        <div>
+                            <strong>{{ paper.score }}</strong>
+                            <span>/ 100</span>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="eyebrow">RESOURCE READINESS</span>
+                        <h2>{{ paper.report.label }}</h2>
+                        <p class="muted">
+                            {{ paper.report.scope }} · {{ paper.report.resource_count }} links checked
+                            {% if paper.report.pages %}
+                                · {{ paper.report.pages }} {{ 'page' if paper.report.pages == 1 else 'pages' }}
+                            {% endif %}
+                        </p>
+                        <p class="meta">
+                            Checked {{ paper.report.analyzed_at[:19] | replace('T', ' ') }} UTC · rubric v{{ paper.report.version }}
+                        </p>
+                        <p class="meta">An availability snapshot, not a guarantee of reproducibility.</p>
+                    </div>
+                </article>
+                {% for warning in paper.report.warnings %}
+                    <div class="notice warning">{{ warning }}</div>
+                {% endfor %}
+                <section class="panel">
+                    <div class="section-heading">
+                        <h2>Where the score comes from</h2>
+                        <a href="{{ url_for('main.methodology') }}">Methodology ↗</a>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <caption class="sr-only">
+                                Score breakdown by applicable resource category
+                            </caption>
+                            <thead>
+                                <tr>
+                                    <th>Resource</th>
+                                    <th>Evidence</th>
+                                    <th>Points</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in paper.report.breakdown %}
+                                    <tr>
+                                        <td>{{ row.label }}</td>
+                                        <td>
+                                            {% if not row.applicable %}
+                                                <span class="meta">Excluded by reviewer</span>
+                                            {% elif row.accessible %}
+                                                <span class="status accessible">{{ row.accessible }} accessible</span>
+                                            {% elif row.discovered %}
+                                                <span class="status unresolved">{{ row.discovered }} links; none verified accessible</span>
+                                            {% else %}
+                                                <span class="meta">No matching links detected</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ row.earned }} / {{ row.weight if row.applicable else '—' }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="meta formula">
+                        {{ paper.report.earned }} ÷ {{ paper.report.denominator }} × 100 = {{ paper.score }}. Excluded categories are removed from the denominator.
+                    </p>
+                </section>
+            {% else %}
+                <div class="panel intro-panel">
+                    <span class="eyebrow">READY TO INSPECT</span>
+                    <h2>Turn this paper into an evidence trail</h2>
+                    <p>
+                        Choose the resource types relevant to this paper, then start analysis. We’ll extract PDF links, check availability, and explain every point.
+                    </p>
+                    <p class="meta">
+                        Checks contact external resource hosts. Full datasets and source repositories are not downloaded.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+        <aside class="panel analysis-controls">
+            <h2>
+                {% if paper.report %}
+                    Refresh analysis
+                {% else %}
+                    Analyze this paper
+                {% endif %}
+            </h2>
+            <p class="muted">Which resources does this paper need?</p>
+            <form action="{{ url_for('main.analyze_paper', paper_id=paper.id) }}"
+                  method="post"
+                  data-busy>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <fieldset {% if paper.analysis_status == 'analyzing' %}disabled{% endif %}>
+                    <legend class="sr-only">Applicable resource categories</legend>
+                    {% for category, label in [('code','Source code'),('dataset','Datasets'),('documentation','Documentation'),('supplementary','Supplementary material')] %}
+                        <label class="checkbox-row">
+                            <input type="checkbox"
+                                   name="applicable"
+                                   value="{{ category }}"
+                                   {% if not paper.report or category in paper.report.applicable %}checked{% endif %}>
+                            <span>{{ label }}</span>
+                            <span class="meta">{{ weights[category] }} pts</span>
+                        </label>
+                    {% endfor %}
+                    <button class="button primary" type="submit">
+                        {% if paper.analysis_status == "analyzing" %}
+                            Analysis running…
+                        {% elif paper.report %}
+                            Recheck resources ↻
+                        {% else %}
+                            Start analysis →
+                        {% endif %}
+                    </button>
+                </fieldset>
+            </form>
+            <p class="meta">
+                All categories are selected initially. Uncheck those that do not apply. Changing this choice changes the score’s meaning.
+            </p>
+        </aside>
+    </section>
+    {% if paper.report %}
+        <section class="container section" id="resources">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">INSPECT THE EVIDENCE</span>
+                    <h2>
+                        Resource links
+                        <span class="count">{{ resources|length }}</span>
+                    </h2>
+                </div>
+                <label class="resource-filter">
+                    Show
+                    <select id="resource-filter">
+                        <option value="">All categories</option>
+                        {% for category in categories %}
+                            <option value="{{ category }}">{{ category|capitalize }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+            <p class="muted">
+                Review context to confirm a link belongs to this paper. Correcting its category recalculates the score.
+            </p>
+            <div class="resource-list">
+                {% for resource in resources %}
+                    <article class="panel resource-card" data-category="{{ resource.category }}">
+                        <div class="card-top">
+                            <div class="tag-row">
+                                <span class="tag">{{ resource.category|capitalize }}</span>
+                                {% if resource.page %}
+                                    <span class="meta">Page {{ resource.page }}</span>
+                                {% else %}
+                                    <span class="meta">Abstract</span>
+                                {% endif %}
+                            </div>
+                            <span class="status {{ resource.status }}">
+                                {{ resource.status|capitalize }}
+                                {% if resource.http_status %}
+                                    · {{ resource.http_status }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        <h3>
+                            <a href="{{ resource.url }}"
+                               target="_blank"
+                               rel="noopener noreferrer">{{ resource.url }} ↗</a>
+                        </h3>
+                        <p class="resource-note">{{ resource.note }}</p>
+                        {% if resource.final_url and resource.final_url != resource.url %}
+                            <p class="meta">Resolves to: {{ resource.final_url }}</p>
+                        {% endif %}
+                        <details>
+                            <summary>View extraction evidence</summary>
+                            <blockquote>
+                                {{ resource.evidence }}
+                            </blockquote>
+                            <p class="meta">Checked {{ resource.checked_at or 'Not yet checked' }}</p>
+                        </details>
+                        <form class="category-form"
+                              action="{{ url_for('main.update_category', resource_id=resource.id) }}"
+                              method="post"
+                              data-busy>
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <label for="category-{{ resource.id }}">Category</label>
+                            <select id="category-{{ resource.id }}"
+                                    name="category"
+                                    {% if paper.analysis_status == 'analyzing' %}disabled{% endif %}>
+                                {% for category in categories %}
+                                    <option value="{{ category }}"
+                                            {% if resource.category == category %}selected{% endif %}>
+                                        {{ category|capitalize }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <button class="button small secondary"
+                                    type="submit"
+                                    {% if paper.analysis_status == 'analyzing' %}disabled{% endif %}>
+                                Save
+                            </button>
+                        </form>
+                    </article>
+                {% else %}
+                    <div class="empty-state">
+                        <h3>No links detected</h3>
+                        <p>
+                            Resources may be described without URLs, stored elsewhere, or present in an image-only PDF. This report does not establish their absence.
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+            <p id="resource-filter-empty"
+               class="notice"
+               hidden>No resources match this category.</p>
+            <details class="panel limitations">
+                <summary>Analysis limitations</summary>
+                <ul>
+                    {% for limitation in paper.report.limitations %}
+                        <li>{{ limitation }}</li>
+                    {% endfor %}
+                </ul>
+            </details>
+        </section>
+    {% endif %}
+{% endblock %}
