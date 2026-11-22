@@ -1,0 +1,23 @@
+.error-state {
+    text-align: center;
+    border: 1px dashed #d3ddeb;
+    border-radius: var(--radius);
+    padding: 64px 24px;
+    background: #ffffff80;
+}
+
+.error-state p {
+    color: var(--muted);
+    max-width: 550px;
+    margin-inline: auto;
+}
+
+.error-state .button {
+    margin-top: 12px;
+}
+
+@media(max-width:520px) {
+    .error-state {
+        padding: 40px 20px;
+    }
+}

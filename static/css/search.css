@@ -1,0 +1,9 @@
+.page-head>.search-form {
+    margin: 28px 0 0;
+    max-width: none;
+}
+
+.empty-icon {
+    font-size: 48px;
+    color: var(--blue);
+}

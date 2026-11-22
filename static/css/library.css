@@ -1,0 +1,92 @@
+.library-layout {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+}
+
+.filter-panel {
+    position: sticky;
+    top: 24px;
+}
+
+.filter-panel .section-heading {
+    margin-bottom: 18px;
+}
+
+.filter-panel h2 {
+    font-size: 18px;
+}
+
+.filter-panel .section-heading a {
+    font-size: 12px;
+}
+
+.filter-panel label:not(:first-child) {
+    margin-top: 16px;
+}
+
+.filter-panel .button {
+    margin-top: 22px;
+    width: 100%;
+}
+
+.library-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.result-count {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 18px;
+}
+
+@media(max-width:1050px) {
+    .library-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media(max-width:800px) {
+    .library-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .filter-panel {
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px 16px;
+    }
+
+    .filter-panel>.section-heading {
+        grid-column: 1/-1;
+    }
+
+    .filter-panel>label {
+        grid-column: 1/-1;
+        margin: 4px 0 0 !important;
+    }
+
+    .filter-panel>input,
+    .filter-panel>select,
+    .filter-panel>.button {
+        grid-column: 1/-1;
+    }
+
+    .library-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media(max-width:520px) {
+    .library-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.library-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}

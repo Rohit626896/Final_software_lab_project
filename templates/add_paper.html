@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}Add a research paper{% endblock %}
+{% block styles %}
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/add_paper.css') }}">
+{% endblock %}
+{% macro field_error(name) %}
+    {% if errors.get(name) %}
+        <p class="field-error" id="{{ name }}-error">{{ errors[name] }}</p>
+    {% endif %}
+{% endmacro %}
+{% block content %}
+    <section class="container page-head">
+        <span class="eyebrow">YOUR PAPER, YOUR STARTING POINT</span>
+        <h1>Add a research paper</h1>
+        <p class="muted">Enter the details yourself and save the paper to your library. No search needed.</p>
+    </section>
+    <section class="container section add-paper-layout">
+        <form class="panel manual-form"
+              action="{{ url_for('add_paper') }}"
+              method="post"
+              enctype="multipart/form-data"
+              data-busy>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% if errors %}
+                <div class="notice error" role="alert">Please check the highlighted fields. Your details are kept below; reselect your PDF if needed.</div>
+            {% endif %}
+            <div class="form-section-heading">
+                <h2>Paper details</h2>
+                <span class="meta">Only the title is required</span>
+            </div>
+            <div class="manual-field">
+                <label for="manual-title">Paper title <span class="required-mark">*</span></label>
+                <input id="manual-title"
+                       name="title"
+                       value="{{ values.title }}"
+                       maxlength="300"
+                       required
+                       placeholder="Enter the full research paper title"
+                       {% if errors.get('title') %}aria-invalid="true" aria-describedby="title-error"{% endif %}>
+                {{ field_error("title") }}
+            </div>
+            <div class="manual-field">
+                <label for="manual-authors">Authors <span class="optional">(optional)</span></label>
+                <textarea id="manual-authors"
+                          name="authors"
+                          rows="2"
+                          maxlength="2000"
+                          placeholder="Ada Lovelace; Alan Turing"
+                          aria-describedby="authors-help{% if errors.get('authors') %} authors-error{% endif %}"
+                          {% if errors.get('authors') %}aria-invalid="true"{% endif %}>{{ values.authors }}</textarea>
+                <p class="meta field-help"
+                   id="authors-help">Separate authors with a semicolon or a new line.</p>
+                {{ field_error("authors") }}
+            </div>
+            <div class="manual-columns">
+                <div class="manual-field">
+                    <label for="manual-year">Publication year <span class="optional">(optional)</span></label>
+                    <input id="manual-year"
+                           name="year"
+                           type="number"
+                           min="1000"
+                           max="9999"
+                           step="1"
+                           value="{{ values.year }}"
+                           placeholder="e.g. 2024"
+                           {% if errors.get('year') %}aria-invalid="true" aria-describedby="year-error"{% endif %}>
+                    {{ field_error("year") }}
+                </div>
+                <div class="manual-field">
+                    <label for="manual-area">Research area <span class="optional">(optional)</span></label>
+                    <input id="manual-area"
+                           name="area"
+                           maxlength="80"
+                           value="{{ values.area }}"
+                           placeholder="e.g. Computer vision"
+                           {% if errors.get('area') %}aria-invalid="true" aria-describedby="area-error"{% endif %}>
+                    {{ field_error("area") }}
+                </div>
+            </div>
+            <div class="form-section-heading">
+                <h2>Paper and PDF</h2>
+            </div>
+            <div class="manual-field">
+                <label for="manual-paper-url">Original paper URL <span class="optional">(optional)</span></label>
+                <input id="manual-paper-url"
+                       name="paper_url"
+                       type="url"
+                       maxlength="2048"
+                       value="{{ values.paper_url }}"
+                       placeholder="https://..."
+                       {% if errors.get('paper_url') %}aria-invalid="true" aria-describedby="paper_url-error"{% endif %}>
+                {{ field_error("paper_url") }}
+            </div>
+            <div class="manual-field">
+                <label for="manual-pdf-url">Direct PDF URL <span class="optional">(optional)</span></label>
+                <input id="manual-pdf-url"
+                       name="pdf_url"
+                       type="url"
+                       maxlength="2048"
+                       value="{{ values.pdf_url }}"
+                       placeholder="https://.../paper.pdf"
+                       {% if errors.get('pdf_url') %}aria-invalid="true" aria-describedby="pdf_url-error"{% endif %}>
+                {{ field_error("pdf_url") }}
+            </div>
+            <div class="manual-field">
+                <label for="manual-pdf">Attach a PDF <span class="optional">(optional)</span></label>
+                <input id="manual-pdf"
+                       name="pdf"
+                       type="file"
+                       accept=".pdf,application/pdf"
+                       aria-describedby="manual-pdf-help{% if errors.get('pdf') %} pdf-error{% endif %}"
+                       {% if errors.get('pdf') %}aria-invalid="true"{% endif %}>
+                <p id="manual-pdf-help"
+                   class="meta field-help">Up to 20 MB and 300 pages. An attached PDF is used before the PDF URL.</p>
+                {{ field_error("pdf") }}
+            </div>
+            <div class="manual-field">
+                <label for="manual-abstract">Abstract or resource notes <span class="optional">(optional)</span></label>
+                <textarea id="manual-abstract"
+                          name="abstract"
+                          rows="5"
+                          maxlength="20000"
+                          placeholder="Paste an abstract or notes, including any code, dataset, or documentation links."
+                          aria-describedby="abstract-help{% if errors.get('abstract') %} abstract-error{% endif %}"
+                          {% if errors.get('abstract') %}aria-invalid="true"{% endif %}>{{ values.abstract }}</textarea>
+                <p id="abstract-help"
+                   class="meta field-help">Links here can be analyzed even when you do not have a PDF.</p>
+                {{ field_error("abstract") }}
+            </div>
+            <div class="manual-actions">
+                <button class="button primary" type="submit">Save paper to library</button>
+                <a class="button secondary" href="{{ url_for('library') }}">Cancel</a>
+            </div>
+        </form>
+        <aside class="add-paper-sidebar">
+            <div class="panel">
+                <span class="eyebrow">A DIRECT ROUTE TO YOUR LIBRARY</span>
+                <h2>Start with what you have</h2>
+                <p class="muted">A title is enough to save a paper. Add a PDF or resource links when you want to inspect its reproducibility resources.</p>
+                <div class="add-paper-tip">
+                    <h3>Already have the PDF?</h3>
+                    <p>Attach it here to analyze the links inside the paper.</p>
+                </div>
+                <div class="add-paper-tip">
+                    <h3>Only have a link?</h3>
+                    <p>Use the direct PDF URL, or paste resource links into your notes.</p>
+                </div>
+                <div class="add-paper-tip">
+                    <h3>Ready to analyze?</h3>
+                    <p>After saving, choose the resource categories on the paper page and start analysis.</p>
+                </div>
+            </div>
+            <a class="text-link" href="{{ url_for('library') }}">Back to your library</a>
+        </aside>
+    </section>
+{% endblock %}

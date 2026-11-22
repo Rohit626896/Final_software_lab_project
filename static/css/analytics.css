@@ -1,0 +1,85 @@
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+.stat {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat>span {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.stat>strong {
+    font-size: 40px;
+    letter-spacing: -.05em;
+}
+
+.stat small {
+    color: var(--muted);
+    margin-left: 6px;
+    letter-spacing: 0;
+}
+
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.chart-panel {
+    padding: 8px;
+    overflow: hidden;
+}
+
+.chart {
+    width: 100%;
+    min-height: 360px;
+}
+
+.availability-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px 36px;
+}
+
+.availability-grid>div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.availability-grid strong {
+    font-size: 26px;
+}
+
+@media(max-width:800px) {
+    .chart-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media(max-width:520px) {
+    .stat-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+    }
+
+    .stat {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .stat>strong {
+        font-size: 32px;
+    }
+
+    .chart-panel {
+        padding: 0;
+    }
+}

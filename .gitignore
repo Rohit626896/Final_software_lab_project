@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# PaperLens runtime data
+data/*.db
+data/*.db-*
+data/.secret_key
+data/uploads/

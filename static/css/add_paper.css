@@ -1,0 +1,133 @@
+.add-paper-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 28px;
+    align-items: start;
+}
+
+.manual-form {
+    padding: 32px;
+}
+
+.form-section-heading {
+    margin-bottom: 20px;
+}
+
+.form-section-heading h2 {
+    margin-bottom: 4px;
+    font-size: 22px;
+}
+
+.manual-field {
+    min-width: 0;
+    margin-bottom: 22px;
+}
+
+.manual-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.manual-form textarea {
+    width: 100%;
+    min-width: 0;
+    border: 1px solid #ccd5e1;
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+    resize: vertical;
+}
+
+.manual-form textarea:focus {
+    outline: 2px solid #93b4ff;
+    outline-offset: 1px;
+    border-color: var(--blue);
+}
+
+.manual-form [aria-invalid=true] {
+    border-color: #b83434;
+}
+
+.optional {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.required-mark {
+    color: var(--blue);
+}
+
+.field-help {
+    margin-top: 7px;
+    margin-bottom: 0;
+}
+
+.field-error {
+    margin-top: 7px;
+    margin-bottom: 0;
+    color: #b83434;
+    font-size: 13px;
+}
+
+.manual-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 6px;
+}
+
+.add-paper-sidebar {
+    min-width: 0;
+}
+
+.add-paper-sidebar h2 {
+    font-size: 23px;
+}
+
+.add-paper-tip {
+    padding-top: 20px;
+    margin-top: 20px;
+    border-top: 1px solid var(--line);
+}
+
+.add-paper-tip h3 {
+    font-size: 15px;
+    margin-bottom: 6px;
+}
+
+.add-paper-tip p {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+@media(max-width:1050px) {
+    .add-paper-layout {
+        grid-template-columns: minmax(0, 1fr) 280px;
+        gap: 20px;
+    }
+}
+
+@media(max-width:800px) {
+    .add-paper-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media(max-width:520px) {
+    .manual-form {
+        padding: 20px;
+    }
+
+    .manual-columns {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+    }
+
+    .manual-form textarea {
+        font-size: 16px;
+    }
+}

@@ -1,0 +1,147 @@
+.search-form {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    padding: 8px;
+    background: white;
+    border: 1px solid #d7e1f2;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    max-width: 940px;
+    margin: 0 auto;
+}
+
+.search-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+    padding-left: 10px;
+}
+
+.search-input>span {
+    font-size: 27px;
+    color: var(--muted);
+    line-height: 1;
+}
+
+.search-input input {
+    border: 0;
+    min-height: 48px;
+    padding: 10px 4px;
+}
+
+.search-form>select {
+    width: 165px;
+    border-color: var(--line);
+    font-size: 13px;
+    background: #f8faff;
+}
+
+.search-form>.button {
+    white-space: nowrap;
+}
+
+.paper-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.paper-card {
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    transition: box-shadow .2s;
+}
+
+.paper-card:hover {
+    box-shadow: 0 8px 24px #14213d0c;
+}
+
+.paper-card h3 {
+    line-height: 1.4;
+    font-size: 17px;
+}
+
+.paper-card h3 a {
+    color: var(--ink);
+}
+
+.abstract-preview {
+    font-size: 13px;
+    color: #66758b;
+    flex: 1;
+}
+
+.card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #edf0f5;
+    margin-top: 4px;
+}
+
+.card-bottom .text-link {
+    white-space: nowrap;
+}
+
+.score-pill {
+    background: #eaf4ed;
+    color: #21704b;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+@media(max-width:1050px) {
+    .paper-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media(max-width:800px) {
+    .search-form {
+        flex-wrap: wrap;
+    }
+
+    .search-input {
+        flex-basis: 100%;
+    }
+
+    .search-form>select {
+        flex: 1;
+    }
+
+    .search-form>.button {
+        flex: 1;
+    }
+}
+
+@media(max-width:520px) {
+    .search-form>select,
+    .search-form>.button {
+        flex-basis: 100%;
+        width: 100%;
+    }
+
+    .search-input input {
+        font-size: 16px;
+    }
+
+    .paper-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .paper-card {
+        padding: 20px;
+    }
+}
