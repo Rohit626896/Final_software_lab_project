@@ -224,3 +224,6 @@ data/*.db
 data/*.db-*
 data/.secret_key
 data/uploads/
+
+# Automatic pre-migration database backups
+data/backups/

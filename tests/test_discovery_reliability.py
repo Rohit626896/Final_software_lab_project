@@ -13,7 +13,7 @@ from unittest.mock import Mock, patch
 import requests
 
 from app import create_app
-from src.database import connection, save_paper
+from src.database.db import connection, save_paper
 from src.paper.discovery import discover, search_semantic, search_europe_pmc
 from src.paper import provider_http
 

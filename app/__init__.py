@@ -19,6 +19,9 @@ def create_app(test_config=None):
     app.config.from_object(Config)
     if test_config:
         app.config.update(test_config)
+    from src.database.db import database_path
+
+    app.config["DATABASE"] = str(database_path(app.config.get("DATABASE")))
     Path(app.config["DATABASE"]).parent.mkdir(parents=True, exist_ok=True)
     Path(app.config["UPLOAD_FOLDER"]).mkdir(parents=True, exist_ok=True)
     if not app.config.get("SECRET_KEY"):
@@ -31,7 +34,7 @@ def create_app(test_config=None):
             pass
         app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY") or secret_path.read_text().strip()
 
-    from src.database import connection, init_db, now
+    from src.database.db import connection, init_db, now
 
     with app.app_context():
         init_db()
@@ -110,7 +113,7 @@ def create_app(test_config=None):
     def refresh_checks(limit):
         """Refresh saved reports, suitable for a local cron job."""
         from src.analysis import analyze
-        from src.database import list_papers
+        from src.database.db import list_papers
 
         papers = [p for p in list_papers() if p["report"] and p["analysis_status"] != "analyzing"]
         papers.sort(key=lambda paper: paper["report"]["analyzed_at"])

@@ -5,7 +5,7 @@ import socket
 import ssl
 
 from src.checker.network import UnsafeURL, fetch
-from src.database import now
+from src.database.db import now
 
 
 def check_resource(resource):

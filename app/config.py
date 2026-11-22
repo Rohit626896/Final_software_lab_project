@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 class Config:
-    DATABASE = os.environ.get("PAPERLENS_DATABASE", str(ROOT / "data" / "paperlens.db"))
+    DATABASE = os.environ.get("PAPERLENS_DATABASE") or str(ROOT / "data" / "paperlens.db")
     UPLOAD_FOLDER = str(ROOT / "data" / "uploads")
     MAX_CONTENT_LENGTH = 20 * 1024 * 1024
     MAX_PDF_PAGES = 300

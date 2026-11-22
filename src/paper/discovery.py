@@ -12,7 +12,7 @@ import requests
 from flask import current_app
 from src.paper.arxiv_client import search_arxiv
 from src.paper.provider_http import ProviderRateLimit, provider_get
-from src.database import connection, list_papers
+from src.database.db import connection, list_papers
 
 
 def identity(paper):
@@ -23,6 +23,10 @@ def identity(paper):
     url = paper.get("paper_url") or ""
     if "arxiv.org/abs/" in url:
         return "arxiv:" + re.sub(r"v\d+$", "", url.split("/abs/")[-1])
+    external_id = paper.get("external_id") or paper.get("paper_id")
+    if external_id:
+        provider_key = paper.get("source", "").casefold() + ":" + str(external_id)
+        return "provider:" + hashlib.sha256(provider_key.encode()).hexdigest()
     # Cross-provider deduplication fallback when identifiers are absent.
     title = re.sub(r"[^\w]", "", paper["title"].casefold())
     return "title:" + hashlib.sha256(title.encode()).hexdigest()

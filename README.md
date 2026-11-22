@@ -100,7 +100,15 @@ Live verification during implementation found both search providers returning HT
 - Generated signing key: `data/.secret_key`
 - Browser screenshots and tooling: `.cache/`
 
-These generated files are ignored by Git. Back up the database and uploaded PDFs together while the application is stopped.
+The original `papers` and `resources` tables are defined in `src/database/schema.sql`, with app-required additions grouped separately. Background job and cache tables are in `src/database/app_schema.sql`. Database functions live in `src/database/db.py`, with the supplied function names kept at the top. `src/database/__init__.py` only maintains compatibility with older imports. Paper metadata, external IDs, analysis timestamps, scores, full reports, resource checks, jobs, and discovery caches are committed to the SQLite file. Uploaded PDF bytes stay in `data/uploads/`; their paths are saved in the database. Stopping Flask does not delete either. On restart, library pages and reports load from the saved database without repeating provider or resource requests.
+
+The database follows the supplied `papers` and `resources` structure, with additional columns needed by the UI (report JSON, score, page, precise check status, and extraction details). Stored paper states are `pending`, `analyzing`, `completed`, `partial`, and `failed`; existing UI labels remain compatible. Resource types are Code, Dataset, Documentation, Supplementary material, and Unknown. Broad accessibility is Accessible, Inaccessible, or Inconclusive; detailed HTTP outcomes are preserved separately.
+
+On the first startup with an older database, migration preserves record IDs, reports, resources, uploaded-file paths, jobs, and cached searches. It first creates a SQLite backup in a `backups/` folder beside the database, then migrates in a transaction. Databases using the supplied two-table schema are also supported; saved resource checks can reconstruct an explicitly labeled imported report. Repeated startups do not rebuild or clear the database. A failed analysis refresh retains the previous report and last successful analysis time.
+
+Keep using the same database path between runs. `PAPERLENS_DATABASE` can point to an existing file, including `instance/reproducibility_explorer.db`; relative paths resolve against the project root. An unset or blank variable uses `data/paperlens.db`. In-memory or temporary SQLite URLs are rejected to prevent accidental nonpersistent storage.
+
+These generated files are ignored by Git. Stop the server before the first migrated startup. Back up the database and uploaded PDFs together while the application is stopped.
 
 Two analyses can run concurrently, with up to four active/queued jobs. Each analysis checks up to 60 links with four bounded network workers. Jobs persist their progress in SQLite; jobs whose owning process has exited are marked interrupted on startup and can be retried. A failed refresh preserves the last saved report.
 

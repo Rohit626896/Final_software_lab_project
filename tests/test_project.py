@@ -12,7 +12,7 @@ import pymupdf as fitz
 from app import create_app
 from src.checker import check_resource
 from src.checker.network import UnsafeURL, fetch, validate_url
-from src.database import connection, get_paper, get_resources, list_papers, save_paper
+from src.database.db import connection, get_paper, get_resources, list_papers, save_paper
 from src.paper.discovery import discover, identity
 from src.paper.extractor import extract_paper
 from src.parser import classify, links_from_text, normalize_url
@@ -450,7 +450,7 @@ class WebTests(unittest.TestCase):
 
     def test_live_jobs_survive_other_app_instances(self):
         import os
-        from src.database import now
+        from src.database.db import now
 
         paper_id = save_paper(metadata())
         job_id = str(os.getpid()) + "-alive"
@@ -464,7 +464,7 @@ class WebTests(unittest.TestCase):
         self.assertEqual(get_paper(paper_id)["analysis_status"], "analyzing")
 
     def test_interrupted_jobs_are_recoverable(self):
-        from src.database import now
+        from src.database.db import now
 
         paper_id = save_paper(metadata())
         with connection() as db:

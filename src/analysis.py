@@ -12,7 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 from flask import current_app
 from src.checker import check_resource
 from src.checker.network import download_pdf
-from src.database import connection, get_paper, get_resources, now
+from src.database.db import connection, get_paper, get_resources, now, save_analysis
 from src.paper.extractor import extract_paper
 from src.parser import links_from_text
 from src.scoring import calculate_score
@@ -109,30 +109,7 @@ def analyze(paper_id, applicable, job_id=None):
     # 4. Save resources and report together so a failed refresh cannot erase
     # the previous successful report.
     stage(job_id, "Saving report")
-    with connection() as db:
-        db.execute("DELETE FROM resources WHERE paper_id=?", (paper_id,))
-        for resource in checked:
-            db.execute(
-                """INSERT INTO resources
-                (paper_id,url,category,evidence,page,status,http_status,final_url,checked_at,note)
-                VALUES (?,?,?,?,?,?,?,?,?,?)""",
-                (
-                    paper_id,
-                    resource["url"],
-                    resource["category"],
-                    resource.get("evidence", ""),
-                    resource.get("page"),
-                    resource["status"],
-                    resource["http_status"],
-                    resource["final_url"],
-                    resource["checked_at"],
-                    resource["note"],
-                ),
-            )
-        db.execute(
-            "UPDATE papers SET report=?,score=?,analysis_status=? WHERE id=?",
-            (json.dumps(report), report["score"], "complete" if extracted else "partial", paper_id),
-        )
+    save_analysis(paper_id, checked, report, "completed" if extracted else "partial")
     return report
 
 

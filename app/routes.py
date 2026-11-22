@@ -23,7 +23,8 @@ from flask import (
 )
 
 from src.analysis import latest_job, rescore, start_analysis
-from src.database import (
+from src.database.db import (
+    RESOURCE_TYPES,
     connection,
     facets,
     get_paper,
@@ -328,7 +329,10 @@ def register_routes(app):
             ):
                 flash("Wait for analysis to finish before editing categories.", "info")
                 return redirect(url_for("detail", paper_id=paper_id))
-            db.execute("UPDATE resources SET category=? WHERE id=?", (category, resource_id))
+            db.execute(
+                "UPDATE resources SET resource_type=? WHERE id=?",
+                (RESOURCE_TYPES[category], resource_id),
+            )
         rescore(paper_id)
         flash("Category updated and score recalculated.", "success")
         return redirect(url_for("detail", paper_id=paper_id, _anchor="resources"))

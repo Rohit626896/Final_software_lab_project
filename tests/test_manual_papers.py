@@ -9,7 +9,7 @@ from unittest.mock import patch
 import pymupdf as fitz
 
 from app import create_app
-from src.database import get_paper, get_resources, list_papers
+from src.database.db import get_paper, get_resources, list_papers
 
 
 def pdf_bytes():
